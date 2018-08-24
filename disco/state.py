@@ -248,7 +248,17 @@ class State(object):
         # New connection
         elif event.state.channel_id:
             if event.state.guild_id in self.guilds:
+                current_voice_states = list(self.guilds[event.state.guild_id].voice_states.values())
+                for voice_state in current_voice_states:
+                    if voice_state.user_id == event.user_id:
+                        del self.guilds[event.state.guild_id].voice_states[voice_state.session_id]
+                        break
                 self.guilds[event.state.guild_id].voice_states[event.state.session_id] = event.state
+            current_voice_states = list(self.voice_states.values())
+            for voice_state in current_voice_states:
+                if voice_state.user_id == event.user_id:
+                    del self.voice_states[voice_state.session_id]
+                    break
             self.voice_states[event.state.session_id] = event.state
 
     def on_guild_member_add(self, event):
